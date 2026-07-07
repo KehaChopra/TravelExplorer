@@ -4,11 +4,15 @@ import cors from "cors";
 import dotenv from"dotenv"; //used to read .env 
 import countryRoutes from "./routes/country.js";
 import weatherRoutes from "./routes/weather.js";
+import authRoutes from "./routes/auth.js";
+const app=express();
+app.use(express.json());
+app.use("/api/auth", authRoutes);
 console.log("weatherRoutes is:", weatherRoutes);
 dotenv.config();
-const app=express();
+
 app.use(cors());
-app.use(express.json()); //converts json to javascript object
+ //converts json to javascript object
 
 app.use("/api/country",countryRoutes);
 app.use("/api/weather", weatherRoutes);

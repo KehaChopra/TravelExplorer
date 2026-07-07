@@ -1,38 +1,27 @@
 import express from "express";
-import axios from "axios";
+import { getCountryData } from "../services/countryService.js"; // Import the service function
 
 const router = express.Router();
+
+// Define the route: GET /api/country/:name
+// This route takes a country name as a parameter and returns country info
 router.get("/:name", async (req, res) => {
-    // /:name is called the route parameter whatever coutry name comes it stores it here
-  const countryName = req.params.name;//mini version of app that only handles routes under a specific prefix app controls the whole server router controls only country side routes
+  // /:name is called the route parameter; whatever country name is in the URL, it is captured here
+  const countryName = req.params.name;
 
   try {
-    console.log(countryName);
-    const response = await axios.get(
-      `https://api.restcountries.com/countries/v5/names.common/${countryName}`,{
-        headers:{
-            Authorization:`Bearer ${process.env.COUNTRY_API_KEY}`,
-        },
-      }
-    );
+    console.log(countryName); // Log the country name for debugging
 
-    const data = response.data.data.objects[0]; // real shape: data -> data -> objects -> [0]
+    // Call the service to fetch the country data
+    const result = await getCountryData(countryName);
 
-    const result = {
-      country: data.names.common, // plural "names", not "name"
-      capital: data.capitals?.[0]?.name, // capitals is an array of OBJECTS, need .name
-      population: data.population,
-      currency: data.currencies?.[0]?.code, // currencies is an array, not an object with keys
-      flag: data.flag.url_png, // singular "flag", key is "url_png" not "png"
-      region: data.region,
-      languages: data.languages?.map((lang) => lang.name), // this part was already correct
-    };//we create our own json api returns too much information we only extract wjat we need
-
+    // Respond with the simplified result
     res.json(result);
   } catch (error) {
+    // If any error occurs (e.g., country not found), log it and send a 404 response
     console.error(error.message);
     res.status(404).json({ error: "Country not found" });
   }
 });
 
-export default router;
+export default router;//mini version of app that only handles routes under a specific prefix app controls the whole server router controls only country side routes// /:name is called the route parameter whatever coutry name comes it stores it here
