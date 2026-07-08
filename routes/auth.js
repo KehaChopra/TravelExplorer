@@ -2,11 +2,15 @@ import express from "express";
 import bcrypt from "bcrypt";
 import {users} from "../data/users.js";
 import jwt from "jsonwebtoken";
+import { verifyToken } from "../middleware/verifyToken.js";
 const router=express.Router();
-
+router.get("/protected", verifyToken, (req, res) => {
+  res.json({ message: `Hello ${req.user.email}, you are authenticated!` });
+});
 
 router.post("/signup",async(req,res)=>{
   console.log(req.body)
+
     const {email,password}=req.body;
       if (!email || !password) {
     return res.status(400).json({ error: "Email and password are required" });
